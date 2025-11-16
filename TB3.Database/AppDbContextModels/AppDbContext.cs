@@ -17,6 +17,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblProduct> TblProducts { get; set; }
 
+    public virtual DbSet<TblProductCategory> TblProductCategories { get; set; }
+
     public virtual DbSet<TblSale> TblSales { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -37,6 +39,22 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ModifiedDateTime).HasColumnType("datetime");
             entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
             entity.Property(e => e.ProductName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TblProductCategory>(entity =>
+        {
+            entity.HasKey(e => e.ProductCategoryId).HasName("PK__Tbl_Prod__3224ECCE34C8A3BF");
+
+            entity.ToTable("Tbl_ProductCategory");
+
+            entity.HasIndex(e => e.ProductCategoryCode, "UQ__Tbl_Prod__A6C3D9BC808E77C6").IsUnique();
+
+            entity.Property(e => e.ProductCategoryCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ProductCategoryName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
         });

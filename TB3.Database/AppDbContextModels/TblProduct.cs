@@ -19,5 +19,7 @@ public partial class TblProduct
 
     public DateTime? ModifiedDateTime { get; set; }
 
+    public int ProductCategoryId { get; set; }
+
     public virtual ICollection<TblSale> TblSales { get; set; } = new List<TblSale>();
 }

@@ -28,6 +28,7 @@ namespace TB3.WebApi.Controllers
                     Price = x.Price,
                     Quantity = x.Quantity,
                     DeleteFlag = x.DeleteFlag,
+                    ProductCategoryId = x.ProductCategoryId,
                     CreatedDateTime = x.CreatedDateTime,
                     ModifiedDateTime = x.ModifiedDateTime
                 })
@@ -55,6 +56,7 @@ namespace TB3.WebApi.Controllers
                 Price = product.Price,
                 Quantity = product.Quantity,
                 DeleteFlag = product.DeleteFlag,
+                ProductCategoryId = product.ProductCategoryId,
                 CreatedDateTime = product.CreatedDateTime,
                 ModifiedDateTime = product.ModifiedDateTime
             };
@@ -70,6 +72,7 @@ namespace TB3.WebApi.Controllers
                 ProductName = request.ProductName,
                 Price = request.Price,
                 Quantity = request.Quantity,
+                ProductCategoryId = request.ProductCategoryId,
                 CreatedDateTime = DateTime.Now,
                 DeleteFlag = false
             });
@@ -94,6 +97,7 @@ namespace TB3.WebApi.Controllers
             product.ProductName = request.ProductName;
             product.Price = request.Price;
             product.Quantity = request.Quantity;
+            product.ProductCategoryId = request.ProductCategoryId;
             product.ModifiedDateTime = DateTime.Now;
             
             int result = _db.SaveChanges();
@@ -120,6 +124,8 @@ namespace TB3.WebApi.Controllers
                 product.Price = request.Price ?? 0;
             if (request.Quantity is not null && request.Quantity > 0)
                 product.Quantity = request.Quantity ?? 0;
+            if (request.ProductCategoryId is not null && request.ProductCategoryId > 0)
+                product.ProductCategoryId = request.ProductCategoryId ?? 0;
             product.ModifiedDateTime = DateTime.Now;
             
             int result = _db.SaveChanges();
@@ -159,6 +165,8 @@ namespace TB3.WebApi.Controllers
         public int Quantity { get; set; }
 
         public bool DeleteFlag { get; set; }
+        
+        public int ProductCategoryId { get; set; }
 
         public DateTime? CreatedDateTime { get; set; }
 
@@ -172,6 +180,8 @@ namespace TB3.WebApi.Controllers
         public int Quantity { get; set; }
 
         public decimal Price { get; set; }
+        
+        public int ProductCategoryId { get; set; }
     }
     
     public class ProductUpdateRequestDto
@@ -181,6 +191,8 @@ namespace TB3.WebApi.Controllers
         public int Quantity { get; set; }
 
         public decimal Price { get; set; }
+        
+        public int ProductCategoryId { get; set; }
     }
     
     public class ProductPatchRequestDto
@@ -190,5 +202,7 @@ namespace TB3.WebApi.Controllers
         public int? Quantity { get; set; }
 
         public decimal? Price { get; set; }
+        
+        public int? ProductCategoryId { get; set; }
     }
 }
