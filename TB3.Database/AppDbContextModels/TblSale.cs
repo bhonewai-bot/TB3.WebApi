@@ -13,8 +13,6 @@ public partial class TblSale
 
     public decimal Price { get; set; }
 
-    public bool DeleteFlag { get; set; }
-
     public DateTime CreatedDateTime { get; set; }
 
     public virtual TblProduct Product { get; set; } = null!;
