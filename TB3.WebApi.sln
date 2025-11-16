@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.WebApi", "TB3.WebApi\TB3.WebApi.csproj", "{F3DC5D2E-FF4B-4B08-8B87-451C99EED7AA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.Database", "TB3.Database\TB3.Database.csproj", "{6F4A3443-8DDC-4A80-977E-7B027C3265B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{F3DC5D2E-FF4B-4B08-8B87-451C99EED7AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3DC5D2E-FF4B-4B08-8B87-451C99EED7AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3DC5D2E-FF4B-4B08-8B87-451C99EED7AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
