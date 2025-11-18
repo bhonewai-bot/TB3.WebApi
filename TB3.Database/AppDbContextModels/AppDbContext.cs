@@ -33,6 +33,8 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("Tbl_Product");
 
+            entity.HasIndex(e => e.Sku, "UQ_Tbl_Product_SKU").IsUnique();
+
             entity.Property(e => e.CreatedDateTime)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -41,6 +43,10 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ProductName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.Sku)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("SKU");
         });
 
         modelBuilder.Entity<TblProductCategory>(entity =>
@@ -65,10 +71,19 @@ public partial class AppDbContext : DbContext
 
             entity.ToTable("Tbl_Sale");
 
+            entity.Property(e => e.CashierName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.CreatedDateTime)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.PaymentType)
+                .HasMaxLength(20)
+                .IsUnicode(false);
             entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.TotalAmount)
+                .HasComputedColumnSql("([Quantity]*[Price])", true)
+                .HasColumnType("decimal(29, 2)");
 
             entity.HasOne(d => d.Product).WithMany(p => p.TblSales)
                 .HasForeignKey(d => d.ProductId)

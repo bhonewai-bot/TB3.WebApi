@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TB3.Database;
 using TB3.Database.AppDbContextModels;
 
 namespace TB3.WebApi.Controllers
@@ -16,15 +17,46 @@ namespace TB3.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetSales()
+        public IActionResult GetSales(
+            [FromQuery] DateTime? from,
+            [FromQuery] DateTime? to,
+            [FromQuery] string? cashierName,
+            [FromQuery] string? paymentType)
         {
-            List<SaleResponseDto> lts = _db.TblSales
+            var sales = _db.TblSales.AsQueryable();
+
+            if (from.HasValue)
+            {
+                sales = sales.Where(x => x.CreatedDateTime >= from.Value);
+            }
+
+            if (to.HasValue)
+            {
+                var endDate = to.Value.AddDays(1);
+                sales = sales.Where(x => x.CreatedDateTime < endDate);
+            }
+
+            if (!string.IsNullOrEmpty(cashierName))
+            {
+                sales = sales.Where(x => x.CashierName.Contains(cashierName));
+            }
+
+            if (!string.IsNullOrEmpty(paymentType))
+            {
+                sales = sales.Where(x => x.PaymentType == paymentType);
+            }
+            
+            List<SaleResponseDto> lts = sales
+                .OrderByDescending(x => x.SaleId)
                 .Select(x => new SaleResponseDto()
                 {
                     SaleId = x.SaleId,
                     ProductId = x.ProductId,
+                    CashierName = x.CashierName,
+                    PaymentType = x.PaymentType,
                     Quantity = x.Quantity,
                     Price = x.Price,
+                    TotalAmount = x.TotalAmount,
                     CreatedDateTime = x.CreatedDateTime
                 })
                 .ToList();
@@ -47,10 +79,17 @@ namespace TB3.WebApi.Controllers
             {
                 return BadRequest("Insufficient quantity");
             }
+
+            if (request.PaymentType != EnumPaymentType.Card && request.PaymentType != EnumPaymentType.Cash)
+            {
+                return BadRequest("Invalid payment method");
+            }
             
             _db.TblSales.Add(new TblSale()
             {
                 ProductId = request.ProductId,
+                CashierName = request.CashierName,
+                PaymentType = request.PaymentType.ToString(),
                 Quantity = request.Quantity,
                 Price = request.Price,
                 CreatedDateTime = DateTime.Now
@@ -71,17 +110,27 @@ namespace TB3.WebApi.Controllers
         public int SaleId { get; set; }
 
         public int ProductId { get; set; }
+        
+        public string CashierName { get; set; }
+        
+        public string PaymentType { get; set; }
 
         public int Quantity { get; set; }
 
         public decimal Price { get; set; }
 
+        public decimal? TotalAmount { get; set; }
+        
         public DateTime CreatedDateTime { get; set; }
     }
 
     public class SaleCreateRequestDto
     {
         public int ProductId { get; set; }
+        
+        public string CashierName { get; set; }
+        
+        public EnumPaymentType PaymentType { get; set; }
 
         public int Quantity { get; set; }
 

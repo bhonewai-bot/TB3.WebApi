@@ -16,18 +16,25 @@ namespace TB3.WebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetProducts()
+        public IActionResult GetProducts([FromQuery] int? productCategoryId)
         {
-            List<ProductResponseDto> lts = _db.TblProducts
-                .Where(x => x.DeleteFlag == false)
+            var products = _db.TblProducts
+                .Where(x => x.DeleteFlag == false);
+
+            if (productCategoryId.HasValue)
+            {
+                products = products.Where(x => x.ProductCategoryId == productCategoryId);
+            }
+            
+            List<ProductResponseDto> lts = products
                 .OrderByDescending(x => x.ProductId)
                 .Select(x => new ProductResponseDto()
                 {
                     ProductId = x.ProductId,
+                    SKU = x.Sku,
                     ProductName = x.ProductName,
                     Price = x.Price,
                     Quantity = x.Quantity,
-                    DeleteFlag = x.DeleteFlag,
                     ProductCategoryId = x.ProductCategoryId,
                     CreatedDateTime = x.CreatedDateTime,
                     ModifiedDateTime = x.ModifiedDateTime
@@ -52,10 +59,10 @@ namespace TB3.WebApi.Controllers
             var response = new ProductResponseDto()
             {
                 ProductId = product.ProductId,
+                SKU = product.Sku,
                 ProductName = product.ProductName,
                 Price = product.Price,
                 Quantity = product.Quantity,
-                DeleteFlag = product.DeleteFlag,
                 ProductCategoryId = product.ProductCategoryId,
                 CreatedDateTime = product.CreatedDateTime,
                 ModifiedDateTime = product.ModifiedDateTime
@@ -67,8 +74,16 @@ namespace TB3.WebApi.Controllers
         [HttpPost]
         public IActionResult CreateProduct(ProductCreateRequestDto request)
         {
+            var product = _db.TblProducts
+                .FirstOrDefault(x => x.Sku == request.SKU);
+            if (product is not null)
+            {
+                return BadRequest("SKU already exists");
+            }
+            
             _db.TblProducts.Add(new TblProduct()
             {
+                Sku = request.SKU,
                 ProductName = request.ProductName,
                 Price = request.Price,
                 Quantity = request.Quantity,
@@ -94,6 +109,7 @@ namespace TB3.WebApi.Controllers
                 return NotFound("Product not found");
             }
 
+            product.Sku = request.SKU;
             product.ProductName = request.ProductName;
             product.Price = request.Price;
             product.Quantity = request.Quantity;
@@ -118,6 +134,8 @@ namespace TB3.WebApi.Controllers
                 return NotFound("Product not found");
             }
 
+            if (!string.IsNullOrEmpty(request.SKU))
+                product.Sku = request.SKU;
             if (!string.IsNullOrEmpty(request.ProductName))
                 product.ProductName = request.ProductName;
             if (request.Price is not null && request.Price > 0)
@@ -157,14 +175,14 @@ namespace TB3.WebApi.Controllers
     public class ProductResponseDto
     {
         public int ProductId { get; set; }
+        
+        public string SKU { get; set; }
 
         public string ProductName { get; set; }
         
         public decimal Price { get; set; }
 
         public int Quantity { get; set; }
-
-        public bool DeleteFlag { get; set; }
         
         public int ProductCategoryId { get; set; }
 
@@ -175,6 +193,8 @@ namespace TB3.WebApi.Controllers
 
     public class ProductCreateRequestDto
     {
+        public string SKU { get; set; }
+        
         public string ProductName { get; set; }
 
         public int Quantity { get; set; }
@@ -186,6 +206,8 @@ namespace TB3.WebApi.Controllers
     
     public class ProductUpdateRequestDto
     {
+        public string SKU { get; set; }
+        
         public string ProductName { get; set; }
 
         public int Quantity { get; set; }
@@ -197,6 +219,8 @@ namespace TB3.WebApi.Controllers
     
     public class ProductPatchRequestDto
     {
+        public string? SKU { get; set; }
+        
         public string? ProductName { get; set; }
 
         public int? Quantity { get; set; }

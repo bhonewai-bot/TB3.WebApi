@@ -15,5 +15,11 @@ public partial class TblSale
 
     public DateTime CreatedDateTime { get; set; }
 
+    public string CashierName { get; set; } = null!;
+
+    public string PaymentType { get; set; } = null!;
+
+    public decimal? TotalAmount { get; set; }
+
     public virtual TblProduct Product { get; set; } = null!;
 }

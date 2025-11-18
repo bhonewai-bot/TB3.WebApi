@@ -21,5 +21,7 @@ public partial class TblProduct
 
     public int ProductCategoryId { get; set; }
 
+    public string Sku { get; set; } = null!;
+
     public virtual ICollection<TblSale> TblSales { get; set; } = new List<TblSale>();
 }
