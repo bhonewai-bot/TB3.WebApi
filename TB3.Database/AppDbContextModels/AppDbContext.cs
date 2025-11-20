@@ -23,6 +23,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblSale> TblSales { get; set; }
 
+    public virtual DbSet<TblStaff> TblStaffs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Server=.;Database=MiniPOS;User ID=sa;Password=sasa@123;TrustServerCertificate=True;");
@@ -43,6 +45,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.CustomerName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+            entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
             entity.Property(e => e.Gender)
                 .HasMaxLength(10)
                 .IsUnicode(false);
@@ -115,6 +118,38 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Tbl_Sale__Produc__3D5E1FD2");
+        });
+
+        modelBuilder.Entity<TblStaff>(entity =>
+        {
+            entity.HasKey(e => e.StaffId).HasName("PK__Tbl_Staf__96D4AB17CABEBF93");
+
+            entity.ToTable("Tbl_Staff");
+
+            entity.HasIndex(e => e.StaffCode, "UQ__Tbl_Staf__D83AD8120CB17CBC").IsUnique();
+
+            entity.Property(e => e.Address)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.DateOfBirth).HasColumnType("datetime");
+            entity.Property(e => e.Gender)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.MobileNo)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Password)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Position)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.StaffCode)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.StaffName)
+                .HasMaxLength(20)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);
