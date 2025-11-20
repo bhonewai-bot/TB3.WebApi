@@ -15,6 +15,8 @@ public partial class AppDbContext : DbContext
     {
     }
 
+    public virtual DbSet<TblCustomer> TblCustomers { get; set; }
+
     public virtual DbSet<TblProduct> TblProducts { get; set; }
 
     public virtual DbSet<TblProductCategory> TblProductCategories { get; set; }
@@ -27,26 +29,50 @@ public partial class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<TblCustomer>(entity =>
+        {
+            entity.HasKey(e => e.CustomerId).HasName("PK__Tbl_Cust__A4AE64D83DC3DF93");
+
+            entity.ToTable("Tbl_Customer");
+
+            entity.HasIndex(e => e.CustomerCode, "UQ__Tbl_Cust__06678521DBAA8A42").IsUnique();
+
+            entity.Property(e => e.CustomerCode)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.CustomerName)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Gender)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.MobileNo)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+        });
+
         modelBuilder.Entity<TblProduct>(entity =>
         {
             entity.HasKey(e => e.ProductId).HasName("PK__Tbl_Prod__B40CC6CD026ED229");
 
             entity.ToTable("Tbl_Product");
 
-            entity.HasIndex(e => e.Sku, "UQ_Tbl_Product_SKU").IsUnique();
+            entity.HasIndex(e => e.ProductCode, "UQ_Tbl_Product_Code").IsUnique();
 
             entity.Property(e => e.CreatedDateTime)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.ModifiedDateTime).HasColumnType("datetime");
             entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ProductCategoryCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.ProductCode)
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.ProductName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
-            entity.Property(e => e.Sku)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("SKU");
         });
 
         modelBuilder.Entity<TblProductCategory>(entity =>
