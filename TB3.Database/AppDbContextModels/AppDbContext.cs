@@ -23,6 +23,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblSale> TblSales { get; set; }
 
+    public virtual DbSet<TblSequence> TblSequences { get; set; }
+
     public virtual DbSet<TblStaff> TblStaffs { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -118,6 +120,20 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.ProductId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Tbl_Sale__Produc__3D5E1FD2");
+        });
+
+        modelBuilder.Entity<TblSequence>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Tbl_Sequ__3214EC077D2DFF4D");
+
+            entity.ToTable("Tbl_Sequence");
+
+            entity.Property(e => e.Code)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.Field)
+                .HasMaxLength(50)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TblStaff>(entity =>

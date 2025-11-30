@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.WebApi", "TB3.WebApi\TB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.Database", "TB3.Database\TB3.Database.csproj", "{6F4A3443-8DDC-4A80-977E-7B027C3265B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.Shared", "TB3.Shared\TB3.Shared.csproj", "{FE370CD1-2305-4EB0-9545-F553B4834189}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TB3.Models", "TB3.Models\TB3.Models.csproj", "{3AD39263-CA1D-44C5-ABC2-F70C3B33D704}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F4A3443-8DDC-4A80-977E-7B027C3265B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE370CD1-2305-4EB0-9545-F553B4834189}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE370CD1-2305-4EB0-9545-F553B4834189}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE370CD1-2305-4EB0-9545-F553B4834189}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE370CD1-2305-4EB0-9545-F553B4834189}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3AD39263-CA1D-44C5-ABC2-F70C3B33D704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3AD39263-CA1D-44C5-ABC2-F70C3B33D704}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3AD39263-CA1D-44C5-ABC2-F70C3B33D704}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3AD39263-CA1D-44C5-ABC2-F70C3B33D704}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

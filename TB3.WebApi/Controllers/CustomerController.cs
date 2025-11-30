@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TB3.Database.AppDbContextModels;
+using TB3.WebApi.Services.Sequence;
 
 namespace TB3.WebApi.Controllers
 {
@@ -10,9 +11,11 @@ namespace TB3.WebApi.Controllers
     public class CustomerController : ControllerBase
     {
         private readonly AppDbContext _db;
+        private readonly ISequenceService _sequenceService;
 
-        public CustomerController()
+        public CustomerController(ISequenceService sequenceService)
         {
+            _sequenceService = sequenceService;
             _db = new AppDbContext();
         }
 
@@ -70,11 +73,7 @@ namespace TB3.WebApi.Controllers
         [HttpPost]
         public IActionResult CreateCustomer(CustomerCreateRequest request)
         {
-            var nextNumber = (_db.TblCustomers.Any()) 
-                ? _db.TblCustomers.Max(x => x.CustomerId) + 1 
-                : 1;  
-            
-            string customerCode = $"CUS{nextNumber:D4}";
+            string customerCode = _sequenceService.GenerateCode("CustomerCode");
 
             _db.TblCustomers.Add(new TblCustomer()
             {
