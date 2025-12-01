@@ -1,7 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using TB3.Database.AppDbContextModels;
-using TB3.WebApi.Services.Sequence;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,6 +7,10 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));
 }, ServiceLifetime.Transient, ServiceLifetime.Transient);
 
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IProductCategoryService, ProductCategoryService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<ISequenceService, SequenceService>();
 
 builder.Services.AddControllers();

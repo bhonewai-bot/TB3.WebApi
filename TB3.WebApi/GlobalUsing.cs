@@ -1,0 +1,13 @@
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.AspNetCore.Mvc;
+global using TB3.Database.AppDbContextModels;
+global using TB3.WebApi.Services.Customer;
+global using TB3.WebApi.Services.Product;
+global using TB3.WebApi.Services.Sequence;
+global using TB3.WebApi.Services.Staff;
+global using TB3.WebApi.Services.ProductCategory;
+global using TB3.Models.Dtos.Customer;
+global using TB3.Models.Dtos.Product;
+global using TB3.Models.Dtos.Staff;
+global using TB3.Models.Dtos.ProductCategory;
+global using TB3.Models.Dtos.Sequence;

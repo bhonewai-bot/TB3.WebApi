@@ -7,10 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Setup\Customer\" />
-      <Folder Include="Setup\Product\" />
-      <Folder Include="Setup\Sale\" />
-      <Folder Include="Setup\Staff\" />
+      <Folder Include="Dtos\Sale\" />
     </ItemGroup>
 
     <ItemGroup>

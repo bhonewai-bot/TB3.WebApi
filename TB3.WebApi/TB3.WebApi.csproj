@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TB3.Database\TB3.Database.csproj" />
+      <ProjectReference Include="..\TB3.Models\TB3.Models.csproj" />
     </ItemGroup>
 
 </Project>

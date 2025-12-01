@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using TB3.Database;
-using TB3.Database.AppDbContextModels;
 
 namespace TB3.WebApi.Controllers
 {

@@ -1,159 +1,60 @@
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TB3.Database.AppDbContextModels;
-using TB3.WebApi.Services.Sequence;
-
 namespace TB3.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class SequenceController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly ISequenceService _sequenceService;
 
-        public SequenceController(AppDbContext db, ISequenceService sequenceService)
+        public SequenceController(ISequenceService sequenceService)
         {
-            _db = db;
+            _sequenceService = sequenceService;
         }
 
         [HttpGet]
-        public IActionResult GetSequences()
+        public async Task<IActionResult> GetSequences()
         {
-            List<SequenceResponseDto> lts = _db.TblSequences
-                .AsNoTracking()
-                .OrderByDescending(x => x.Id)
-                .Select(x => new SequenceResponseDto()
-                {
-                    Id = x.Id,
-                    Field = x.Field,
-                    Code = x.Code,
-                    Length = x.Length,
-                    Sequence = x.Sequence
-                })
-                .ToList();
-            
-            return Ok(lts);
+            var list = await _sequenceService.GetSequencesAsync();
+            return Ok(list);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetSequence(int id)
+        public async Task<IActionResult> GetSequence(int id)
         {
-            var sequence = _db.TblSequences
-                .AsNoTracking()
-                .Where(x => x.Id == id)
-                .Select(x => new SequenceResponseDto
-                {
-                    Id = x.Id,
-                    Field = x.Field,
-                    Code = x.Code,
-                    Length = x.Length,
-                    Sequence = x.Sequence
-                })
-                .FirstOrDefault();
+            var sequence = await _sequenceService.GetSequenceAsync(id);
 
             if (sequence is null)
             {
                 return NotFound("Sequence not found");
             }
-            
+
             return Ok(sequence);
         }
 
         [HttpPost]
-        public IActionResult CreateSequence(SequenceCreateDto request)
+        public async Task<IActionResult> CreateSequence(SequenceCreateDto request)
         {
-            var exists = _db.TblSequences
-                .Any(x => x.Field == request.Field);
-            
-            if (exists)
+            var ok = await _sequenceService.CreateSequenceAsync(request);
+
+            if (!ok)
             {
-                return BadRequest("Sequence for this field already exists");
+                return BadRequest("Sequence for this field already exists or failed to save");
             }
-            
-            _db.TblSequences.Add(new TblSequence()
-            {
-                Field = request.Field,
-                Code = request.Code,
-                Length = request.Length,
-                Sequence = 0
-            });
-            
-            int result = _db.SaveChanges();
-            string message = result > 0 ? "Saving successful" : "Saving failed";
-            
-            return Ok(message);
+
+            return Ok("Saving successful");
         }
 
         [HttpPatch("{id}")]
-        public IActionResult UpdateSequence(int id, SequencePatchDto request)
+        public async Task<IActionResult> UpdateSequence(int id, SequencePatchDto request)
         {
-            var sequence = _db.TblSequences
-                .FirstOrDefault(x => x.Id == id);
-            
-            if (sequence is null)
-            {
-                return NotFound("Sequence not found");
-            }
-            
-            if (!string.IsNullOrEmpty(request.Field))
-            {
-                var exists = _db.TblSequences
-                    .Any(x => x.Field == request.Field && x.Id != id);
+            var ok = await _sequenceService.UpdateSequenceAsync(id, request);
 
-                if (exists)
-                {
-                    return BadRequest("Another sequence with this field already exists");
-                }
-
-                sequence.Field = request.Field;
+            if (!ok)
+            {
+                return BadRequest("Sequence not found or field already used by another sequence");
             }
-            if (!string.IsNullOrEmpty(request.Code))
-                sequence.Code = request.Code;
-            if (request.Length is not null && request.Length > 0)
-                sequence.Length = request.Length ?? 0;
-            if (request.Sequence is not null && request.Sequence > 0)
-                sequence.Sequence = request.Sequence ?? 0;
-            
-            int result = _db.SaveChanges();
-            string message = result > 0 ? "Patching successful" : "Patching failed";
-            
-            return Ok(message);
+
+            return Ok("Patching successful");
         }
-    }
-
-    public class SequenceResponseDto
-    {
-        public int Id { get; set; }
-
-        public string Field { get; set; }
-
-        public string Code { get; set; }
-
-        public int Length { get; set; }
-
-        public int Sequence { get; set; }
-    }
-
-    public class SequenceCreateDto
-    {
-        public string Field { get; set; }
-
-        public string Code { get; set; }
-
-        public int Length { get; set; }
-
-        public int Sequence { get; set; }
-    }
-    
-    public class SequencePatchDto
-    {
-        public string? Field { get; set; }
-
-        public string? Code { get; set; }
-
-        public int? Length { get; set; }
-
-        public int? Sequence { get; set; }
     }
 }
