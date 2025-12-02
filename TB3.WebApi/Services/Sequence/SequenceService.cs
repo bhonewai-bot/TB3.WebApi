@@ -47,38 +47,45 @@ public class SequenceService : ISequenceService
         return seq;
     }
 
-    public async Task<bool> CreateSequenceAsync(SequenceCreateDto request)
+    public async Task<SequenceResponseDto?> CreateSequenceAsync(SequenceCreateDto request)
     {
         var exists = await _db.TblSequences
             .AnyAsync(x => x.Field == request.Field);
 
         if (exists)
         {
-            return false;
+            return null;
         }
 
-        var entity = new TblSequence
+        var sequence = new TblSequence
         {
             Field = request.Field,
             Code = request.Code,
             Length = request.Length,
-            Sequence = 0 // ignore request.Sequence, start from 0
+            Sequence = request.Sequence 
         };
 
-        _db.TblSequences.Add(entity);
+        _db.TblSequences.Add(sequence);
         var result = await _db.SaveChangesAsync();
 
-        return result > 0;
+        return new SequenceResponseDto()
+        {
+            Id = sequence.Id,
+            Field = sequence.Field,
+            Code = sequence.Code,
+            Length = sequence.Length,
+            Sequence = sequence.Sequence
+        };
     }
 
-    public async Task<bool> UpdateSequenceAsync(int id, SequencePatchDto request)
+    public async Task<SequenceResponseDto?> UpdateSequenceAsync(int id, SequencePatchDto request)
     {
         var sequence = await _db.TblSequences
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (sequence is null)
         {
-            return false;
+            return null;
         }
 
         if (!string.IsNullOrEmpty(request.Field))
@@ -88,8 +95,7 @@ public class SequenceService : ISequenceService
 
             if (exists)
             {
-                // let controller handle message
-                return false;
+                return null;
             }
 
             sequence.Field = request.Field;
@@ -104,14 +110,22 @@ public class SequenceService : ISequenceService
         if (request.Sequence is not null && request.Sequence >= 0)
             sequence.Sequence = request.Sequence.Value;
 
-        var result = await _db.SaveChangesAsync();
+        await _db.SaveChangesAsync();
 
-        return result > 0;
+        return new SequenceResponseDto()
+        {
+            Id = sequence.Id,
+            Field = sequence.Field,
+            Code = sequence.Code,
+            Length = sequence.Length,
+            Sequence = sequence.Sequence
+        };;
     }
     
-    public string GenerateCode(string field)
+    public async Task<string> GenerateCode(string field)
     {
-        var sequence = _db.TblSequences.FirstOrDefault(x => x.Field == field);
+        var sequence = await _db.TblSequences
+            .FirstOrDefaultAsync(x => x.Field == field);
 
         if (sequence is null)
         {
@@ -119,10 +133,9 @@ public class SequenceService : ISequenceService
         }
 
         sequence.Sequence += 1;
-
         string generatedCode = $"{sequence.Code}{sequence.Sequence.ToString().PadLeft(sequence.Length, '0')}";
 
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         
         return generatedCode;
     }

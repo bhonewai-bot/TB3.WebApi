@@ -7,19 +7,13 @@ public partial class TblSale
 {
     public int SaleId { get; set; }
 
-    public int ProductId { get; set; }
+    public string VoucherNo { get; set; } = null!;
 
-    public int Quantity { get; set; }
+    public string? PaymentType { get; set; }
 
-    public decimal Price { get; set; }
+    public decimal TotalAmount { get; set; }
 
-    public DateTime CreatedDateTime { get; set; }
+    public string? StaffCode { get; set; }
 
-    public string CashierName { get; set; } = null!;
-
-    public string PaymentType { get; set; } = null!;
-
-    public decimal? TotalAmount { get; set; }
-
-    public virtual TblProduct Product { get; set; } = null!;
+    public DateTime SaleDateTime { get; set; }
 }

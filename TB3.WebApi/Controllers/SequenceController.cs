@@ -34,27 +34,27 @@ namespace TB3.WebApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSequence(SequenceCreateDto request)
         {
-            var ok = await _sequenceService.CreateSequenceAsync(request);
+            var sequence = await _sequenceService.CreateSequenceAsync(request);
 
-            if (!ok)
+            if (sequence is null)
             {
                 return BadRequest("Sequence for this field already exists or failed to save");
             }
 
-            return Ok("Saving successful");
+            return Ok(sequence);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateSequence(int id, SequencePatchDto request)
         {
-            var ok = await _sequenceService.UpdateSequenceAsync(id, request);
+            var sequence = await _sequenceService.UpdateSequenceAsync(id, request);
 
-            if (!ok)
+            if (sequence is null)
             {
                 return BadRequest("Sequence not found or field already used by another sequence");
             }
 
-            return Ok("Patching successful");
+            return Ok(sequence);
         }
     }
 }

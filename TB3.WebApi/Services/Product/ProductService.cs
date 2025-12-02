@@ -3,10 +3,12 @@ namespace TB3.WebApi.Services.Product;
 public class ProductService : IProductService
 {
     private readonly AppDbContext _db;
+    private readonly ISequenceService _sequenceService;
 
-    public ProductService(AppDbContext db)
+    public ProductService(AppDbContext db, ISequenceService sequenceService)
     {
         _db = db;
+        _sequenceService = sequenceService;
     }
 
     public async Task<List<ProductResponseDto>> GetProducts(string? productCategoryCode)
@@ -61,17 +63,11 @@ public class ProductService : IProductService
 
     public async Task<ProductResponseDto?> CreateProduct(ProductCreateRequestDto request)
     {
-        var exists = await _db.TblProducts
-            .AnyAsync(x => x.ProductCode == request.ProductCode);
-
-        if (exists)
-        {
-            return null;
-        }
+        string productCode = await _sequenceService.GenerateCode("ProductCode");
 
         var product = new TblProduct()
         {
-            ProductCode = request.ProductCode,
+            ProductCode = productCode,
             ProductName = request.ProductName,
             Price = request.Price,
             Quantity = request.Quantity,

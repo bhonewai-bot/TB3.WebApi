@@ -1,136 +1,47 @@
-using TB3.Database;
-
 namespace TB3.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class SaleController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly ISaleService _saleService;
 
-        public SaleController()
+        public SaleController(ISaleService saleService)
         {
-            _db = new AppDbContext();
+            _saleService = saleService;
         }
 
         [HttpGet]
-        public IActionResult GetSales(
-            [FromQuery] DateTime? from,
-            [FromQuery] DateTime? to,
-            [FromQuery] string? cashierName,
-            [FromQuery] string? paymentType)
+        public async Task<IActionResult> GetSales(DateTime? from, DateTime? to)
         {
-            var sales = _db.TblSales.AsQueryable();
+            var sales = await _saleService.GetSales(from, to);
+            return Ok(sales);
+        }
+        
+        [HttpGet("{voucherNo}")]
+        public async Task<IActionResult> GetSale(string voucherNo)
+        {
+            var sale = await _saleService.GetSale(voucherNo);
 
-            if (from.HasValue)
+            if (sale is null)
             {
-                sales = sales.Where(x => x.CreatedDateTime >= from.Value);
-            }
-
-            if (to.HasValue)
-            {
-                var endDate = to.Value.AddDays(1);
-                sales = sales.Where(x => x.CreatedDateTime < endDate);
-            }
-
-            if (!string.IsNullOrEmpty(cashierName))
-            {
-                sales = sales.Where(x => x.CashierName.Contains(cashierName));
-            }
-
-            if (!string.IsNullOrEmpty(paymentType))
-            {
-                sales = sales.Where(x => x.PaymentType == paymentType);
+                return NotFound("Sale not found");
             }
             
-            List<SaleResponseDto> lts = sales
-                .OrderByDescending(x => x.SaleId)
-                .Select(x => new SaleResponseDto()
-                {
-                    SaleId = x.SaleId,
-                    ProductId = x.ProductId,
-                    CashierName = x.CashierName,
-                    PaymentType = x.PaymentType,
-                    Quantity = x.Quantity,
-                    Price = x.Price,
-                    TotalAmount = x.TotalAmount,
-                    CreatedDateTime = x.CreatedDateTime
-                })
-                .ToList();
-
-            return Ok(lts);
+            return Ok(sale);
         }
 
         [HttpPost]
-        public IActionResult CreateSale(SaleCreateRequestDto request)
+        public async Task<IActionResult> CreateSale(SaleCreateRequestDto request)
         {
-            var product = _db.TblProducts
-                .FirstOrDefault(x => x.ProductId == request.ProductId && x.DeleteFlag == false);
-
-            if (product is null)
+            var response = await _saleService.CreateSale(request);
+            
+            if (response is null)
             {
-                return BadRequest("Product not found");
-            }
-
-            if (product.Quantity < request.Quantity)
-            {
-                return BadRequest("Insufficient quantity");
-            }
-
-            if (request.PaymentType != EnumPaymentType.Card && request.PaymentType != EnumPaymentType.Cash)
-            {
-                return BadRequest("Invalid payment method");
+                return BadRequest("Product not found or not enough stock");
             }
             
-            _db.TblSales.Add(new TblSale()
-            {
-                ProductId = request.ProductId,
-                CashierName = request.CashierName,
-                PaymentType = request.PaymentType.ToString(),
-                Quantity = request.Quantity,
-                Price = request.Price,
-                CreatedDateTime = DateTime.Now
-            });
-
-            product.Quantity -= request.Quantity;
-            product.ModifiedDateTime = DateTime.Now;
-            
-            int result = _db.SaveChanges();
-            string message = result > 0 ? "Saving successful" : "Saving failed";
-            
-            return Ok(message);
+            return Ok(response);
         }
-    }
-
-    public class SaleResponseDto
-    {
-        public int SaleId { get; set; }
-
-        public int ProductId { get; set; }
-        
-        public string CashierName { get; set; }
-        
-        public string PaymentType { get; set; }
-
-        public int Quantity { get; set; }
-
-        public decimal Price { get; set; }
-
-        public decimal? TotalAmount { get; set; }
-        
-        public DateTime CreatedDateTime { get; set; }
-    }
-
-    public class SaleCreateRequestDto
-    {
-        public int ProductId { get; set; }
-        
-        public string CashierName { get; set; }
-        
-        public EnumPaymentType PaymentType { get; set; }
-
-        public int Quantity { get; set; }
-
-        public decimal Price { get; set; }
     }
 }

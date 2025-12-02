@@ -23,6 +23,8 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<TblSale> TblSales { get; set; }
 
+    public virtual DbSet<TblSaleDetail> TblSaleDetails { get; set; }
+
     public virtual DbSet<TblSequence> TblSequences { get; set; }
 
     public virtual DbSet<TblStaff> TblStaffs { get; set; }
@@ -98,28 +100,43 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<TblSale>(entity =>
         {
-            entity.HasKey(e => e.SaleId).HasName("PK__Tbl_Sale__1EE3C3FFBC34EF05");
+            entity.HasKey(e => e.SaleId).HasName("PK__table_na__1EE3C3FF88FBB566");
 
             entity.ToTable("Tbl_Sale");
 
-            entity.Property(e => e.CashierName)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.CreatedDateTime)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.HasIndex(e => e.VoucherNo, "UQ__table_na__3AD31D6FD5FA4694").IsUnique();
+
             entity.Property(e => e.PaymentType)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
-            entity.Property(e => e.TotalAmount)
+            entity.Property(e => e.SaleDateTime)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.StaffCode)
+                .HasMaxLength(10)
+                .IsUnicode(false);
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.VoucherNo)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<TblSaleDetail>(entity =>
+        {
+            entity.HasKey(e => e.SaleDetailId).HasName("PK__Tbl_Sale__70DB14FEDAE5C11A");
+
+            entity.ToTable("Tbl_SaleDetail");
+
+            entity.Property(e => e.Amount)
                 .HasComputedColumnSql("([Quantity]*[Price])", true)
                 .HasColumnType("decimal(29, 2)");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.TblSales)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Tbl_Sale__Produc__3D5E1FD2");
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ProductCode)
+                .HasMaxLength(20)
+                .IsUnicode(false);
+            entity.Property(e => e.VoucherNo)
+                .HasMaxLength(20)
+                .IsUnicode(false);
         });
 
         modelBuilder.Entity<TblSequence>(entity =>

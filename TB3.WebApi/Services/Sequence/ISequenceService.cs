@@ -4,8 +4,8 @@ public interface ISequenceService
 {
     Task<List<SequenceResponseDto>> GetSequencesAsync();
     Task<SequenceResponseDto?> GetSequenceAsync(int id);
-    Task<bool> CreateSequenceAsync(SequenceCreateDto request);
-    Task<bool> UpdateSequenceAsync(int id, SequencePatchDto request);
+    Task<SequenceResponseDto?> CreateSequenceAsync(SequenceCreateDto request);
+    Task<SequenceResponseDto?> UpdateSequenceAsync(int id, SequencePatchDto request);
     
-    string GenerateCode(string field);
+    Task<string> GenerateCode(string field);
 }

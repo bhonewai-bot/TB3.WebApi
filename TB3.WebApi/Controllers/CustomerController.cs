@@ -33,9 +33,15 @@ namespace TB3.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateCustomer(CustomerCreateRequest request)
+        public async Task<IActionResult> CreateCustomer(CustomerCreateRequest request)
         {
-            var response = _customerService.CreateCustomer(request);
+            var response = await _customerService.CreateCustomer(request);
+            
+            if (response is null)
+            {
+                return BadRequest("Failed to create customer");
+            }
+            
             return Ok(response);
         }
     }

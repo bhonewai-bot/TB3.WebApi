@@ -57,7 +57,7 @@ public class CustomerService : ICustomerService
 
     public async Task<CustomerResponseDto?> CreateCustomer(CustomerCreateRequest request)
     {
-        string customerCode = _sequenceService.GenerateCode("CustomerCode");
+        string customerCode = await _sequenceService.GenerateCode("CustomerCode");
 
         var customer = new TblCustomer()
         {

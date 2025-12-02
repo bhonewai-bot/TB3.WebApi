@@ -62,7 +62,7 @@ public class StaffService : IStaffService
 
     public async Task<StaffResponseDto?> CreateStaff(StaffCreateRequest request)
     {
-        string staffCode = _sequenceService.GenerateCode("StaffCode");
+        string staffCode = await _sequenceService.GenerateCode("StaffCode");
 
         var staff = new TblStaff
         {

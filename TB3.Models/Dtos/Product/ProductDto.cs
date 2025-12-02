@@ -21,21 +21,6 @@ public class ProductResponseDto
 
 public class ProductCreateRequestDto
 {
-    public string ProductCode { get; set; }
-    
-    public string ProductName { get; set; }
-
-    public int Quantity { get; set; }
-
-    public decimal Price { get; set; }
-    
-    public string ProductCategoryCode { get; set; }
-}
-
-public class ProductUpdateRequestDto
-{
-    public string ProductCode { get; set; }
-
     public string ProductName { get; set; }
 
     public int Quantity { get; set; }
@@ -47,7 +32,7 @@ public class ProductUpdateRequestDto
 
 public class ProductPatchRequestDto
 {
-    public string? ProductCode { get; set; }
+    public string ProductCode { get; set; }
     
     public string? ProductName { get; set; }
 
