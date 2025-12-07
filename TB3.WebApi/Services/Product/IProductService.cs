@@ -1,10 +1,13 @@
+using TB3.Models;
+
 namespace TB3.WebApi.Services.Product;
 
 public interface IProductService
 {
-    Task<List<ProductResponseDto>> GetProducts(string? productCategoryCode);
-    Task<ProductResponseDto?> GetProduct(int id);
-    Task<ProductResponseDto?> CreateProduct(ProductCreateRequestDto request);
-    Task<ProductResponseDto?> PatchProduct(int id, ProductPatchRequestDto request);
-    Task<bool> DeleteProduct(int id);
+    Task<ProductGetResponseDto> GetProducts(int pageNo, int pageSize);
+    Task<ProductGetByCodeResponseDto> GetProductByCode(string productCode);
+    Task<ProductResponseDto> CreateProduct(ProductCreateRequestDto request);
+    Task<ProductResponseDto> UpdateProduct(int id, ProductUpdateRequestDto request);
+    Task<ProductResponseDto> PatchProduct(int id, ProductPatchRequestDto request);
+    Task<ProductResponseDto> DeleteProduct(int id);
 }

@@ -11,50 +11,64 @@ namespace TB3.WebApi.Controllers
             _productService = productService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] string? productCategoryCode)
+        [HttpGet("{pageNo}/{pageSize}")]
+        public async Task<IActionResult> GetProducts(int pageNo, int pageSize)
         {
-           var products = await _productService.GetProducts(productCategoryCode);
-           return Ok(products);
+           var result = await _productService.GetProducts(pageNo, pageSize);
+           if (!result.IsSuccess)
+               return BadRequest(result.Message);
+           
+           return Ok(result);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetProduct(int id)
+        [HttpGet("{productCode}")]
+        public async Task<IActionResult> GetProduct(string productCode)
         {
-            var product = await _productService.GetProduct(id);
+            var result = await _productService.GetProductByCode(productCode);
 
-            if (product is null)
-            {
-                return NotFound("Product not found");
-            }
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
             
-            return Ok(product);
+            return Ok(result);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductCreateRequestDto request)
         {
-            var response = await _productService.CreateProduct(request);
-            return Ok(response);
+            var result = await _productService.CreateProduct(request);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            return Ok(result);
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, ProductUpdateRequestDto request)
+        {
+            var result = await _productService.UpdateProduct(id, request);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            
+            return Ok(result);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchProduct(int id, ProductPatchRequestDto request)
         {
-            var response = await _productService.PatchProduct(id, request);
-            if (response is null)
-            {
-                return NotFound("Product not found");
-            }
+            var result = await _productService.PatchProduct(id, request);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
             
-            return Ok(response);
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            var product = await _productService.DeleteProduct(id);
-            return product ? NoContent() : NotFound("Product not found");
+            var result = await _productService.DeleteProduct(id);
+            if (!result.IsSuccess)
+                return BadRequest(result.Message);
+            
+            return Ok(result);
         }
     }
 }

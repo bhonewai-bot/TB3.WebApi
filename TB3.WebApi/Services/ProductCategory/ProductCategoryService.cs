@@ -1,3 +1,5 @@
+using TB3.Models;
+
 namespace TB3.WebApi.Services.ProductCategory;
 
 public class ProductCategoryService : IProductCategoryService
@@ -21,34 +23,41 @@ public class ProductCategoryService : IProductCategoryService
                 ProductCategoryName = x.ProductCategoryName
             })
             .ToListAsync();
-
+        
         return categories;
     }
 
-    public async Task<ProductCategoryResponseDto?> CreateProductCategory(ProductCategoryCreateRequestDto request)
+    public async Task<Result<ProductCategoryResponseDto>> CreateProductCategory(ProductCategoryCreateRequestDto request)
     {
-        var exists = await _db.TblProductCategories
-            .AnyAsync(x => x.ProductCategoryCode == request.ProductCategoryCode);
-
-        if (exists)
+        try
         {
-            return null;
+            var exists = await _db.TblProductCategories
+                .AnyAsync(x => x.ProductCategoryCode == request.ProductCategoryCode);
+
+            if (exists)
+                return Result<ProductCategoryResponseDto>.ValidationError("Product category code already exists");
+            
+            var category = new TblProductCategory
+            {
+                ProductCategoryCode = request.ProductCategoryCode,
+                ProductCategoryName = request.ProductCategoryName
+            };
+
+            _db.TblProductCategories.Add(category);
+            await _db.SaveChangesAsync();
+
+            var categoryDto = new ProductCategoryResponseDto
+            {
+                ProductCategoryId = category.ProductCategoryId,
+                ProductCategoryCode = category.ProductCategoryCode,
+                ProductCategoryName = category.ProductCategoryName
+            };
+            
+            return Result<ProductCategoryResponseDto>.Success(categoryDto, "Product category created.");
         }
-
-        var category = new TblProductCategory
+        catch (Exception ex)
         {
-            ProductCategoryCode = request.ProductCategoryCode,
-            ProductCategoryName = request.ProductCategoryName
-        };
-
-        _db.TblProductCategories.Add(category);
-        await _db.SaveChangesAsync();
-
-        return new ProductCategoryResponseDto
-        {
-            ProductCategoryId = category.ProductCategoryId,
-            ProductCategoryCode = category.ProductCategoryCode,
-            ProductCategoryName = category.ProductCategoryName
-        };
+            return Result<ProductCategoryResponseDto>.SystemError(ex.Message);
+        }
     }
 }

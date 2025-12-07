@@ -24,12 +24,13 @@ namespace TB3.WebApi.Controllers
         {
             var result = await _productCategoryService.CreateProductCategory(request);
 
-            if (result is null)
-            {
-                return BadRequest("Category code already exists");
-            }
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
 
-            return Ok(result);
+            return Ok(result.Data);
         }
     }
 }

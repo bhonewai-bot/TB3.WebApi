@@ -36,7 +36,17 @@ public class SaleService : ISaleService
                PaymentType = x.PaymentType,
                StaffCode = x.StaffCode,
                SaleDateTime = x.SaleDateTime,
-               SaleDetails = null
+               SaleDetails = _db.TblSaleDetails
+                   .Where(y => y.VoucherNo == x.VoucherNo)
+                   .Select(y => new SaleDetailResponseDto()
+                   {
+                       SaleDetailId = y.SaleDetailId,
+                       VoucherNo = y.VoucherNo,
+                       ProductCode = y.ProductCode,
+                       Price = y.Price,
+                       Quantity = y.Quantity
+                   })
+                   .ToList()
            })
            .ToListAsync();
        
@@ -57,7 +67,7 @@ public class SaleService : ISaleService
                 StaffCode = x.StaffCode,
                 SaleDateTime = x.SaleDateTime,
                 SaleDetails = _db.TblSaleDetails
-                    .Where(x => x.VoucherNo == voucherNo)
+                    .Where(y => y.VoucherNo == voucherNo)
                     .Select(y => new SaleDetailResponseDto()
                     {
                         SaleDetailId = y.SaleDetailId,
