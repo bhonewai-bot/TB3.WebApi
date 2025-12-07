@@ -11,20 +11,33 @@ public class ProductCategoryService : IProductCategoryService
         _db = db;
     }
     
-    public async Task<List<ProductCategoryResponseDto>> GetProductCategories()
+    public async Task<Result<List<ProductCategoryResponseDto>>> GetProductCategories(int pageNo, int pageSize)
     {
-        var categories = await _db.TblProductCategories
-            .AsNoTracking()
-            .OrderByDescending(x => x.ProductCategoryId)
-            .Select(x => new ProductCategoryResponseDto
-            {
-                ProductCategoryId = x.ProductCategoryId,
-                ProductCategoryCode = x.ProductCategoryCode,
-                ProductCategoryName = x.ProductCategoryName
-            })
-            .ToListAsync();
+        try
+        {
+            if (pageNo <= 0)
+                return Result<List<ProductCategoryResponseDto>>.ValidationError("Page size must be greater than zero");
+            
+            if (pageSize <= 0)
+                return Result<List<ProductCategoryResponseDto>>.ValidationError("Page number must be greater than zero");
+            
+            var categories = await _db.TblProductCategories
+                .AsNoTracking()
+                .OrderByDescending(x => x.ProductCategoryId)
+                .Select(x => new ProductCategoryResponseDto
+                {
+                    ProductCategoryId = x.ProductCategoryId,
+                    ProductCategoryCode = x.ProductCategoryCode,
+                    ProductCategoryName = x.ProductCategoryName
+                })
+                .ToListAsync();
         
-        return categories;
+            return Result<List<ProductCategoryResponseDto>>.Success(categories, "Success.");
+        }
+        catch (Exception ex)
+        {
+            return Result<List<ProductCategoryResponseDto>>.SystemError(ex.Message);
+        }
     }
 
     public async Task<Result<ProductCategoryResponseDto>> CreateProductCategory(ProductCategoryCreateRequestDto request)

@@ -4,6 +4,6 @@ namespace TB3.WebApi.Services.ProductCategory;
 
 public interface IProductCategoryService
 {
-    Task<List<ProductCategoryResponseDto>> GetProductCategories();
+    Task<Result<List<ProductCategoryResponseDto>>> GetProductCategories(int pageNo, int pageSize);
     Task<Result<ProductCategoryResponseDto>> CreateProductCategory(ProductCategoryCreateRequestDto request);
 }

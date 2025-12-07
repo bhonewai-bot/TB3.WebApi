@@ -12,11 +12,18 @@ namespace TB3.WebApi.Controllers
             _productCategoryService = productCategoryService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProductCategories()
+        [HttpGet("{pageNo}/{pageSize}")]
+        public async Task<IActionResult> GetProductCategories(int pageNo = 1, int pageSize = 10)
         {
-            var categories = await _productCategoryService.GetProductCategories();
-            return Ok(categories);
+            var result = await _productCategoryService.GetProductCategories(pageNo, pageSize);
+            
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
 
         [HttpPost]
