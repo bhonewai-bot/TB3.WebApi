@@ -19,9 +19,9 @@ public class CustomerCreateRequest
 { 
     public string CustomerName { get; set; }
         
-    public string? MobileNo { get; set; }
+    public string MobileNo { get; set; }
         
-    public DateTime? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
         
     public string? Gender { get; set; }
 }

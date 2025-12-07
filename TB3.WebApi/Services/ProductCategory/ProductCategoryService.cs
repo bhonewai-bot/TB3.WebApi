@@ -1,5 +1,3 @@
-using TB3.Models;
-
 namespace TB3.WebApi.Services.ProductCategory;
 
 public class ProductCategoryService : IProductCategoryService
@@ -24,6 +22,8 @@ public class ProductCategoryService : IProductCategoryService
             var categories = await _db.TblProductCategories
                 .AsNoTracking()
                 .OrderByDescending(x => x.ProductCategoryId)
+                .Skip((pageNo -1) * pageSize)
+                .Take(pageSize)
                 .Select(x => new ProductCategoryResponseDto
                 {
                     ProductCategoryId = x.ProductCategoryId,
@@ -32,7 +32,7 @@ public class ProductCategoryService : IProductCategoryService
                 })
                 .ToListAsync();
         
-            return Result<List<ProductCategoryResponseDto>>.Success(categories, "Success.");
+            return Result<List<ProductCategoryResponseDto>>.Success(categories);
         }
         catch (Exception ex)
         {
@@ -44,6 +44,9 @@ public class ProductCategoryService : IProductCategoryService
     {
         try
         {
+            if (string.IsNullOrWhiteSpace(request.ProductCategoryName))
+                return Result<ProductCategoryResponseDto>.ValidationError("Product category name is required");
+            
             var exists = await _db.TblProductCategories
                 .AnyAsync(x => x.ProductCategoryCode == request.ProductCategoryCode);
 

@@ -1,8 +1,10 @@
+using TB3.Models;
+
 namespace TB3.WebApi.Services.Customer;
 
 public interface ICustomerService
 {
-    Task<List<CustomerResponseDto>> GetCustomers(string customerName);
-    Task<CustomerResponseDto?> GetCustomer(int id);
-    Task<CustomerResponseDto?> CreateCustomer(CustomerCreateRequest request);
+    Task<Result<List<CustomerResponseDto>>> GetCustomers(int pageNo, int pageSize);
+    Task<Result<CustomerResponseDto>> GetCustomer(string customerCode);
+    Task<Result<CustomerResponseDto>> CreateCustomer(CustomerCreateRequest request);
 }

@@ -11,38 +11,45 @@ namespace TB3.WebApi.Controllers
             _customerService = customerService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCustomers([FromQuery] string? customerName)
+        [HttpGet("{pageNo}/{pageSize}")]
+        public async Task<IActionResult> GetCustomers(int pageNo = 1, int pageSize = 10)
         {
-            var products = await _customerService.GetCustomers(customerName);
+            var result = await _customerService.GetCustomers(pageNo, pageSize);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
             
-            return Ok(products);
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomer(int id)
+        [HttpGet("{customerCode}")]
+        public async Task<IActionResult> GetCustomer(string customerCode)
         {
-            var customer = await _customerService.GetCustomer(id);
+            var result = await _customerService.GetCustomer(customerCode);
 
-            if (customer is null)
-            {
-                return NotFound("Customer not found");
-            }
-
-            return Ok(customer);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCustomer(CustomerCreateRequest request)
         {
-            var response = await _customerService.CreateCustomer(request);
+            var result = await _customerService.CreateCustomer(request);
             
-            if (response is null)
-            {
-                return BadRequest("Failed to create customer");
-            }
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
             
-            return Ok(response);
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
     }
 }
