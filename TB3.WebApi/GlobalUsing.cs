@@ -14,3 +14,4 @@ global using TB3.Models.Dtos.ProductCategory;
 global using TB3.Models.Dtos.Sequence;
 global using TB3.Models.Dtos.Sale;
 global using TB3.Models;
+global using TB3.Shared;

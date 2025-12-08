@@ -27,11 +27,11 @@ public class StaffCreateRequest
 
     public string Address { get; set; } = null!;
 
-    public DateTime? DateOfBirth { get; set; }
+    public DateTime DateOfBirth { get; set; }
 
     public string Gender { get; set; } = null!;
 
     public string Position { get; set; } = null!;
 
-    public string? Password { get; set; }
+    public string Password { get; set; }
 }

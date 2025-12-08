@@ -12,36 +12,42 @@ namespace TB3.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetStaffs([FromQuery] string? staffName)
+        public async Task<IActionResult> GetStaffs(int pageNo = 1, int pageSize = 10)
         {
-            var staffs = await _staffService.GetStaffs(staffName);
-            return Ok(staffs);
+            var result = await _staffService.GetStaffs(pageNo, pageSize);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetStaff(int id)
+        [HttpGet("{staffCode}")]
+        public async Task<IActionResult> GetStaff(string staffCode)
         {
-            var staff = await _staffService.GetStaff(id);
-
-            if (staff is null)
-            {
-                return NotFound("Staff not found");
-            }
-
-            return Ok(staff);
+            var result = await _staffService.GetStaff(staffCode);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateStaff(StaffCreateRequest request)
         {
-            var response = await _staffService.CreateStaff(request);
-
-            if (response is null)
-            {
-                return BadRequest("Failed to create staff");
-            }
-
-            return Ok(response);
+            var result = await _staffService.CreateStaff(request);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            
+            return Ok(result.Data);
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
-
 namespace TB3.WebApi.Services.Customer;
 
 public class CustomerService : ICustomerService
@@ -84,6 +82,9 @@ public class CustomerService : ICustomerService
             
             if (string.IsNullOrWhiteSpace(request.MobileNo))
                 return Result<CustomerResponseDto>.ValidationError("MobileNo is required");
+            
+            if (string.IsNullOrWhiteSpace(request.Gender))
+                return Result<CustomerResponseDto>.ValidationError("Gender is required");
 
             var exists = await _db.TblCustomers
                 .AnyAsync(x => x.MobileNo == request.MobileNo);
@@ -94,7 +95,7 @@ public class CustomerService : ICustomerService
             if (request.DateOfBirth == default)
                 return Result<CustomerResponseDto>.ValidationError("Date of birth is required");
             
-            var age = CalculateAge(request.DateOfBirth);
+            var age = DevCode.CalculateAge(request.DateOfBirth);
             
             if (age < 18)
                 return Result<CustomerResponseDto>.ValidationError("Age must be greater than 18");
@@ -129,13 +130,5 @@ public class CustomerService : ICustomerService
         {
             return Result<CustomerResponseDto>.SystemError(ex.Message);
         }
-    }
-
-    private int CalculateAge(DateTime birthDate)
-    {
-        DateTime now = DateTime.Today;
-        TimeSpan ageDiff = now - birthDate;
-        int age = (int)(ageDiff.TotalDays / 365);
-        return age;
     }
 }
