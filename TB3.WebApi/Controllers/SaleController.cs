@@ -10,38 +10,53 @@ namespace TB3.WebApi.Controllers
         {
             _saleService = saleService;
         }
+        
+        [HttpGet("{pageNo}/{pageSize}")]
+        public async Task<IActionResult> GetSales(int pageNo = 1, int pageSize = 10)
+        {
+            var result = await _saleService.GetSales(pageNo, pageSize);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            return Ok(result.Data);
+        }
 
         [HttpGet]
-        public async Task<IActionResult> GetSales(DateTime? from, DateTime? to)
+        public async Task<IActionResult> GetSales(DateTime from, DateTime to)
         {
-            var sales = await _saleService.GetSales(from, to);
-            return Ok(sales);
+            var result = await _saleService.GetSales(from, to);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            return Ok(result.Data);
         }
         
         [HttpGet("{voucherNo}")]
         public async Task<IActionResult> GetSale(string voucherNo)
         {
-            var sale = await _saleService.GetSale(voucherNo);
-
-            if (sale is null)
-            {
-                return NotFound("Sale not found");
-            }
+            var result = await _saleService.GetSale(voucherNo);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
             
-            return Ok(sale);
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            return Ok(result.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateSale(SaleCreateRequestDto request)
         {
-            var response = await _saleService.CreateSale(request);
+            var result = await _saleService.CreateSale(request);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
             
-            if (response is null)
-            {
-                return BadRequest("Product not found or not enough stock");
-            }
-            
-            return Ok(response);
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            return Ok(result.Data);
         }
     }
 }

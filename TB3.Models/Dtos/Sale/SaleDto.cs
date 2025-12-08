@@ -9,7 +9,7 @@ public class SaleResponseDto
     public string? StaffCode { get; set; }
     public DateTime SaleDateTime { get; set; }
 
-    public List<SaleDetailResponseDto>? SaleDetails { get; set; } = new List<SaleDetailResponseDto>();
+    public List<SaleDetailResponseDto>? SaleDetails { get; set; }
 }
 
 public class SaleDetailResponseDto

@@ -2,7 +2,8 @@ namespace TB3.WebApi.Services.Sale;
 
 public interface ISaleService
 {
-    Task<List<SaleResponseDto>> GetSales(DateTime? from, DateTime? to);
-    Task<SaleResponseDto?> GetSale(string voucherNo);
-    Task<SaleResponseDto?> CreateSale(SaleCreateRequestDto request);
+    Task<Result<List<SaleResponseDto>>> GetSales(int pageNo, int pageSize);
+    Task<Result<List<SaleResponseDto>>> GetSales(DateTime? from, DateTime? to);
+    Task<Result<SaleResponseDto>> GetSale(string voucherNo);
+    Task<Result<SaleResponseDto>> CreateSale(SaleCreateRequestDto request);
 }
