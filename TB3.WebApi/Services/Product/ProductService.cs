@@ -93,15 +93,63 @@ public class ProductService : IProductService
 
     public async Task<ProductResponseDto> CreateProduct(ProductCreateRequestDto request)
     {
-        var exists = await _db.TblProducts
+        if (string.IsNullOrWhiteSpace(request.ProductName))
+        {
+            return new ProductResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Product name is required"
+            };
+        }
+
+        if (request.Price <= 0)
+        {
+            return new ProductResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Price must be greater than zero"
+            };
+        }
+        
+        if (request.Quantity <= 0)
+        {
+            return new ProductResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Quantity must be greater than zero"
+            };
+        }
+        
+        if (string.IsNullOrWhiteSpace(request.ProductCategoryCode))
+        {
+            return new ProductResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Product name is required"
+            };
+        }
+        
+        var nameExists = await _db.TblProducts
             .AnyAsync(x => x.ProductName == request.ProductName);
 
-        if (exists)
+        if (nameExists)
         {
             return new ProductResponseDto()
             {
                 IsSuccess = false,
                 Message = "Product name already exists."
+            };
+        }
+        
+        var categoryExists = await _db.TblProductCategories
+            .AnyAsync(x => x.ProductCategoryCode == request.ProductCategoryCode);
+
+        if (!categoryExists)
+        {
+            return new ProductResponseDto()
+            {
+                IsSuccess = false,
+                Message = "Invalid product category code."
             };
         }
         
