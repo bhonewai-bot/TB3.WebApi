@@ -12,49 +12,54 @@ namespace TB3.WebApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSequences()
+        public async Task<IActionResult> GetSequences(int pageNo = 1, int pageSize = 10)
         {
-            var list = await _sequenceService.GetSequencesAsync();
-            return Ok(list);
+            var result = await _sequenceService.GetSequences(pageNo, pageSize);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
+            return Ok(result.Data);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSequence(int id)
         {
-            var sequence = await _sequenceService.GetSequenceAsync(id);
+            var result = await _sequenceService.GetSequence(id);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
 
-            if (sequence is null)
-            {
-                return NotFound("Sequence not found");
-            }
-
-            return Ok(sequence);
+            return Ok(result.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateSequence(SequenceCreateDto request)
         {
-            var sequence = await _sequenceService.CreateSequenceAsync(request);
+            var result = await _sequenceService.CreateSequence(request);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
 
-            if (sequence is null)
-            {
-                return BadRequest("Sequence for this field already exists or failed to save");
-            }
-
-            return Ok(sequence);
+            return Ok(result.Data);
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> UpdateSequence(int id, SequencePatchDto request)
         {
-            var sequence = await _sequenceService.UpdateSequenceAsync(id, request);
+            var result = await _sequenceService.UpdateSequence(id, request);
+            if (result.IsValidatorError)
+                return BadRequest(result.Message);
+            
+            if (result.IsSystemError)
+                return StatusCode(500, result.Message);
 
-            if (sequence is null)
-            {
-                return BadRequest("Sequence not found or field already used by another sequence");
-            }
-
-            return Ok(sequence);
+            return Ok(result.Data);
         }
     }
 }

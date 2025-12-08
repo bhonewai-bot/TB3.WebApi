@@ -20,8 +20,6 @@ public class SequenceCreateDto
     public string Code { get; set; }
 
     public int Length { get; set; }
-
-    public int Sequence { get; set; }
 }
     
 public class SequencePatchDto
